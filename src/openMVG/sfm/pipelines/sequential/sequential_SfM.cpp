@@ -26,6 +26,8 @@
 #include "third_party/htmlDoc/htmlDoc.hpp"
 #include "third_party/progress/progress.hpp"
 
+#include "minilog/minilog.h"
+
 #include <ceres/types.h>
 #include <functional>
 #include <iostream>
@@ -157,7 +159,7 @@ bool SequentialSfMReconstructionEngine::Process() {
 
   //-- Reconstruction done.
   //-- Display some statistics
-  std::cout << "\n\n-------------------------------" << "\n"
+  MLOG << "\n\n-------------------------------" << "\n"
     << "-- Structure from Motion (statistics):\n"
     << "-- #Camera calibrated: " << sfm_data_.GetPoses().size()
     << " from " << sfm_data_.GetViews().size() << " input images.\n"
@@ -166,7 +168,7 @@ bool SequentialSfMReconstructionEngine::Process() {
 
   Histogram<double> h;
   ComputeResidualsHistogram(&h);
-  std::cout << "\nHistogram of residuals:" << h.ToString() << std::endl;
+  MLOG << "\nHistogram of residuals:" << h.ToString() << std::endl;
 
   if (!sLogging_file_.empty())
   {
@@ -224,13 +226,13 @@ bool SequentialSfMReconstructionEngine::ChooseInitialPair(Pair & initialPairInde
 
     if (sfm_data_.GetIntrinsics().empty() || valid_views.empty())
     {
-      std::cerr
+      MLOG
         << "There is no defined intrinsic data in order to compute an essential matrix for the initial pair."
         << std::endl;
       return false;
     }
 
-    std::cout << std::endl
+    MLOG << std::endl
       << "----------------------------------------------------\n"
       << "SequentialSfMReconstructionEngine::ChooseInitialPair\n"
       << "----------------------------------------------------\n"
@@ -265,12 +267,12 @@ bool SequentialSfMReconstructionEngine::ChooseInitialPair(Pair & initialPairInde
     for (size_t i = 0; i < std::min((size_t)10, vec_NbMatchesPerPair.size()); ++i) {
       const uint32_t index = packet_vec[i].index;
       openMVG::matching::PairWiseMatches::const_iterator iter = vec_MatchesIterator[index];
-      std::cout << "(" << iter->first.first << "," << iter->first.second <<")\t\t"
+      MLOG << "(" << iter->first.first << "," << iter->first.second <<")\t\t"
         << iter->second.size() << " matches" << std::endl;
     }
 
     // Ask the user to choose an initial pair (by set some view ids)
-    std::cout << std::endl << " type INITIAL pair ids: X enter Y enter\n";
+    MLOG << std::endl << " type INITIAL pair ids: X enter Y enter\n";
     int val, val2;
     if ( std::cin >> val && std::cin >> val2) {
       initialPairIndex.first = val;
@@ -278,7 +280,7 @@ bool SequentialSfMReconstructionEngine::ChooseInitialPair(Pair & initialPairInde
     }
   }
 
-  std::cout << "\nPutative starting pair is: (" << initialPairIndex.first
+  MLOG << "\nPutative starting pair is: (" << initialPairIndex.first
       << "," << initialPairIndex.second << ")" << std::endl;
 
   // Check validity of the initial pair indices:
@@ -300,16 +302,16 @@ bool SequentialSfMReconstructionEngine::InitLandmarkTracks()
   {
     // List of features matches for each couple of images
     const openMVG::matching::PairWiseMatches & map_Matches = matches_provider_->pairWise_matches_;
-    std::cout << "\n" << "Track building" << std::endl;
+    MLOG << "\n" << "Track building" << std::endl;
 
     tracksBuilder.Build(map_Matches);
-    std::cout << "\n" << "Track filtering" << std::endl;
+    MLOG << "\n" << "Track filtering" << std::endl;
     tracksBuilder.Filter();
-    std::cout << "\n" << "Track export to internal struct" << std::endl;
+    MLOG << "\n" << "Track export to internal struct" << std::endl;
     //-- Build tracks with STL compliant type :
     tracksBuilder.ExportToSTL(map_tracks_);
 
-    std::cout << "\n" << "Track stats" << std::endl;
+    MLOG << "\n" << "Track stats" << std::endl;
     {
       std::ostringstream osTrack;
       //-- Display stats :
@@ -333,7 +335,7 @@ bool SequentialSfMReconstructionEngine::InitLandmarkTracks()
         osTrack << "\t" << it.first << "\t" << it.second << "\n";
       }
       osTrack << "\n";
-      std::cout << osTrack.str();
+      MLOG << osTrack.str();
     }
   }
   // Initialize the shared track visibility helper
@@ -544,7 +546,7 @@ bool SequentialSfMReconstructionEngine::MakeInitialPair3D(const Pair & current_p
       << std::endl;
     return false;
   }
-  std::cout << "A-Contrario initial pair residual: "
+  MLOG << "A-Contrario initial pair residual: "
     << relativePose_info.found_residual_precision << std::endl;
   // Bound min precision at 1 pix.
   relativePose_info.found_residual_precision = std::max(relativePose_info.found_residual_precision, 1.0);
@@ -643,7 +645,7 @@ bool SequentialSfMReconstructionEngine::MakeInitialPair3D(const Pair & current_p
     }
     // Save outlier residual information
     Histogram<double> histoResiduals;
-    std::cout << std::endl
+    MLOG << std::endl
       << "=========================\n"
       << " MSE Residual InitialPair Inlier: " << ComputeResidualsHistogram(&histoResiduals) << "\n"
       << "=========================" << std::endl;
@@ -731,8 +733,8 @@ double SequentialSfMReconstructionEngine::ComputeResidualsHistogram(Histogram<do
       histo->Add(vec_residuals.begin(), vec_residuals.end());
     }
 
-    std::cout << std::endl << std::endl;
-    std::cout << std::endl
+    MLOG << std::endl << std::endl;
+    MLOG << std::endl
       << "SequentialSfMReconstructionEngine::ComputeResidualsMSE." << "\n"
       << "\t-- #Tracks:\t" << sfm_data_.GetLandmarks().size() << std::endl
       << "\t-- Residual min:\t" << dMin << std::endl
@@ -888,7 +890,7 @@ bool SequentialSfMReconstructionEngine::Resection(const uint32_t viewIndex)
   if (set_trackIdForResection.empty())
   {
     // No match. The image has no connection with already reconstructed points.
-    std::cout << std::endl
+    MLOG << std::endl
       << "-------------------------------" << "\n"
       << "-- Resection of camera index: " << viewIndex << "\n"
       << "-- Resection status: " << "FAILED" << "\n"
@@ -934,7 +936,7 @@ bool SequentialSfMReconstructionEngine::Resection(const uint32_t viewIndex)
   }
 
   // C. Do the resectioning: compute the camera pose
-  std::cout << std::endl
+  MLOG << std::endl
     << "-------------------------------" << std::endl
     << "-- Robust Resection of view: " << viewIndex << std::endl;
 

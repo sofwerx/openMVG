@@ -22,7 +22,7 @@
 #include "third_party/progress/progress_display.hpp"
 #include "third_party/stlplus3/filesystemSimplified/file_system.hpp"
 
-#include "nonFree/sift/SIFT_describer_io.hpp"
+//#include "nonFree/sift/SIFT_describer_io.hpp"
 
 #include <cereal/details/helpers.hpp>
 
@@ -185,18 +185,18 @@ int main(int argc, char **argv)
   {
     // Create the desired Image_describer method.
     // Don't use a factory, perform direct allocation
-    if (sImage_Describer_Method == "SIFT")
-    {
-      image_describer.reset(new SIFT_Image_describer
-        (SIFT_Image_describer::Params(), !bUpRight));
-    }
-    else
-    if (sImage_Describer_Method == "SIFT_ANATOMY")
-    {
-      image_describer.reset(
-        new SIFT_Anatomy_Image_describer(SIFT_Anatomy_Image_describer::Params()));
-    }
-    else
+    //if (sImage_Describer_Method == "SIFT")
+    //{
+    //  image_describer.reset(new SIFT_Image_describer
+    //    (SIFT_Image_describer::Params(), !bUpRight));
+    //}
+    //else
+    //if (sImage_Describer_Method == "SIFT_ANATOMY")
+    //{
+    //  image_describer.reset(
+    //    new SIFT_Anatomy_Image_describer(SIFT_Anatomy_Image_describer::Params()));
+    //}
+    //else
     if (sImage_Describer_Method == "AKAZE_FLOAT")
     {
       image_describer = AKAZE_Image_describer::create

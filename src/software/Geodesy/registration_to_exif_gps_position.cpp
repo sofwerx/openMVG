@@ -23,6 +23,9 @@
 #include "third_party/stlplus3/filesystemSimplified/file_system.hpp"
 #include "third_party/cmdLine/cmdLine.h"
 
+#include "minilog/minilog.h"
+
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -138,7 +141,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  std::cout << std::endl
+  MLOG << std::endl
     << "Registration report:\n"
     << " #corresponding SFM - GPS data: " << vec_sfm_center.size() << "\n"
     << std::endl;
@@ -172,13 +175,13 @@ int main(int argc, char **argv)
             kernel,
             &sim
           );
-        std::cout << "LMeds found a model with an upper bound of: " <<  sqrt(lmeds_median) << " user units."<< std::endl;
+        MLOG << "LMeds found a model with an upper bound of: " <<  sqrt(lmeds_median) << " user units."<< std::endl;
 
         // Compute & display fitting errors
         {
           const Vec vec_fitting_errors_eigen(
             geometry::kernel::Similarity3ErrorSquaredMetric::ErrorVec(sim, X_SfM, X_GPS).array().sqrt());
-          std::cout << "\n3D Similarity fitting error using all points (in target coordinate system units):";
+          MLOG << "\n3D Similarity fitting error using all points (in target coordinate system units):";
           minMaxMeanMedian<float>(
             vec_fitting_errors_eigen.data(),
             vec_fitting_errors_eigen.data() + vec_fitting_errors_eigen.rows() );
@@ -191,9 +194,9 @@ int main(int argc, char **argv)
             if (geometry::kernel::Similarity3ErrorSquaredMetric::Error(sim, X_SfM.col(i), X_GPS.col(i)) < lmeds_median)
               vec_fitting_errors.push_back((X_GPS.col(i) - sim(X_SfM.col(i))).norm());
           }
-          std::cout << "\nFound: " << vec_fitting_errors.size() << " inliers"
+          MLOG << "\nFound: " << vec_fitting_errors.size() << " inliers"
            << " from " << X_SfM.cols() << " points." << std::endl;
-          std::cout << "\n3D Similarity fitting error using only the fitted inliers (in target coordinate system units):";
+          MLOG << "\n3D Similarity fitting error using only the fitted inliers (in target coordinate system units):";
           minMaxMeanMedian<float>( vec_fitting_errors.begin(), vec_fitting_errors.end() );
         }
       }
@@ -209,7 +212,7 @@ int main(int argc, char **argv)
           return EXIT_FAILURE;
         }
 
-        std::cout
+        MLOG
           << "Found transform:\n"
           << " scale: " << S << "\n"
           << " rotation:\n" << R << "\n"
@@ -223,7 +226,7 @@ int main(int argc, char **argv)
         {
           const Vec vec_fitting_errors_eigen(
             geometry::kernel::Similarity3ErrorSquaredMetric::ErrorVec(sim, X_SfM, X_GPS).array().sqrt());
-          std::cout << "\n3D Similarity fitting error (in target coordinate system units):";
+          MLOG << "\n3D Similarity fitting error (in target coordinate system units):";
           minMaxMeanMedian<float>(
             vec_fitting_errors_eigen.data(),
             vec_fitting_errors_eigen.data() + vec_fitting_errors_eigen.rows() );

@@ -14,6 +14,8 @@
 #include "openMVG/sfm/pipelines/sfm_regions_provider.hpp"
 #include "openMVG/sfm/sfm_data.hpp"
 
+#include "minilog/minilog.h"
+
 using namespace openMVG::matching;
 
 namespace openMVG {
@@ -58,10 +60,10 @@ namespace sfm {
         }
       }
     }
-    std::cout << "Init retrieval database ... " << std::endl;
+    MLOG << "Init retrieval database ... " << std::endl;
     matching_interface_.reset(new
       matching::Matcher_Regions_Database(matching::ANN_L2, *landmark_observations_descriptors_));
-    std::cout << "Retrieval database initialized with:\n"
+    MLOG << "Retrieval database initialized with:\n"
       << "#landmarks: " << sfm_data.GetLandmarks().size() << "\n"
       << "#descriptors: " << landmark_observations_descriptors_->RegionCount() << std::endl;
 
@@ -91,7 +93,7 @@ namespace sfm {
       return false;
     }
 
-    std::cout << "#3D2d putative correspondences: " << vec_putative_matches.size() << std::endl;
+    MLOG << "#3D2d putative correspondences: " << vec_putative_matches.size() << std::endl;
     // Init the 3D-2d correspondences array
     Image_Localizer_Match_Data resection_data;
     if (resection_data_ptr)

@@ -13,6 +13,8 @@
 
 #include "third_party/progress/progress.hpp"
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 namespace matching_image_collection {
 
@@ -35,7 +37,7 @@ void Matcher_Regions::Match(
   if (!my_progress_bar)
     my_progress_bar = &C_Progress::dummy();
 #ifdef OPENMVG_USE_OPENMP
-  std::cout << "Using the OPENMP thread interface" << std::endl;
+  MLOG << "Using the OPENMP thread interface" << std::endl;
   const bool b_multithreaded_pair_search = (eMatcherType_ == CASCADE_HASHING_L2);
   // -> set to true for CASCADE_HASHING_L2, since OpenMP instructions are not used in this matcher
 #endif

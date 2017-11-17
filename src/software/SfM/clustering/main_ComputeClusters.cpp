@@ -23,6 +23,9 @@
 #include "domSetLibrary/domset.h"
 #include "domSetLibrary/types.h"
 
+#include "minilog/minilog.h"
+
+
 #ifdef OPENMVG_USE_OPENMP
 #include <omp.h>
 #endif
@@ -90,7 +93,7 @@ bool domsetImporter(
     points.push_back( p );
   }
 
-  std::cout << std::endl
+  MLOG << std::endl
             << "Number of views  = " << views.size() << std::endl
             << "Number of points = " << points.size() << std::endl
             << "Loading data took (s): "
@@ -154,7 +157,7 @@ bool exportData( const SfM_Data &sfm_data,
 int main( int argc, char **argv )
 {
   using namespace std;
-  std::cout << "Dominant Set Clustering" << std::endl
+  MLOG << "Dominant Set Clustering" << std::endl
             << std::endl;
 
   CmdLine cmd;
@@ -191,7 +194,7 @@ int main( int argc, char **argv )
     return EXIT_FAILURE;
   }
 
-  std::cout << "Params: " << argv[ 0 ]  << std::endl
+  MLOG << "Params: " << argv[ 0 ]  << std::endl
             << "[Input file]      = "   << sSfM_Data_Filename << std::endl
             << "[Outdir path]     = "   << sOutDir << std::endl
             << "[Cluster size:"         << std::endl
@@ -242,7 +245,7 @@ int main( int argc, char **argv )
   nomoko::Domset domset( points, views, cameras, voxelGridSize );
   domset.clusterViews( clusterSizeLowerBound, clusterSizeUpperBound );
 
-  std::cout << "Clustering view took (s): "
+  MLOG << "Clustering view took (s): "
             << clusteringTimer.elapsed() << std::endl;
 
   // export to ply to visualize
@@ -270,7 +273,7 @@ int main( int argc, char **argv )
   }
 
   const size_t numClusters = finalClusters.size();
-  std::cout << "Number of clusters = " << numClusters << std::endl;
+  MLOG << "Number of clusters = " << numClusters << std::endl;
 
 #ifdef OPENMVG_USE_OPENMP
 #pragma omp parallel for
@@ -288,7 +291,7 @@ int main( int argc, char **argv )
     {
       std::stringstream ss;
       ss << "Writing cluster to " << filename.str() << std::endl;
-      std::cout << ss.str();
+      MLOG << ss.str();
     }
 
     if ( !exportData( sfm_data, filename.str(), finalClusters[ i ] ) )

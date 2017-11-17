@@ -37,6 +37,9 @@ using namespace lemon;
 
 #include <queue>
 
+#include "minilog/minilog.h"
+
+
 namespace openMVG   {
 namespace rotation_averaging  {
 namespace l1  {
@@ -431,7 +434,7 @@ bool SolveL1RA
     CorrectMatrix(x, nMainViewID, Rs);
   } while (++iter < 32 && e > 1e-5 && (ep-e)/e > 1e-2);
 
-  std::cout << "L1RA Converged in " << iter << " iterations." << std::endl;
+  MLOG << "L1RA Converged in " << iter << " iterations." << std::endl;
 
   return true;
 }
@@ -506,7 +509,7 @@ bool SolveIRLS
 
   } while (++iter < 32 && e > 1e-5 && (ep-e)/e > 1e-2);
 
-  std::cout << "IRLS Converged in " << iter << " iterations." << std::endl;
+  MLOG << "IRLS Converged in " << iter << " iterations." << std::endl;
 
   return true;
 }
@@ -552,7 +555,7 @@ bool RefineRotationsAvgL1IRLS(
   double fMinAfter, fMaxAfter;
   const double fMeanAfter = RelRotationAvgError(RelRs, Rs, &fMinAfter, &fMaxAfter);
 
-  std::cout << "Refine global rotations using L1RA-IRLS and " << nObss << " relative rotations:\n"
+  MLOG << "Refine global rotations using L1RA-IRLS and " << nObss << " relative rotations:\n"
     << " error reduced from " << fMeanBefore << "(" <<fMinBefore << " min, " << fMaxBefore << " max)\n"
     << " to " << fMeanAfter << "(" << fMinAfter << "min,"<< fMaxAfter<< "max)" << std::endl;
 

@@ -76,9 +76,9 @@ inline void exportToGraphvizData
   file.close();
 
   //Use Graphviz
-  const std::string cmd = "neato -Tsvg -O -Goverlap=scale -Gsplines=false " + sfile;
-  const int ret = std::system(cmd.c_str());
-  (void)ret;
+  //const std::string cmd = "neato -Tsvg -O -Goverlap=scale -Gsplines=false " + sfile;
+  //int ret = std::system(cmd.c_str());
+  //(void)ret;
 }
 
 } // namespace graph

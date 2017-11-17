@@ -20,6 +20,8 @@ the terms of the BSD license (see the COPYING file).
 #include "openMVG/numeric/eigen_alias_definition.hpp"
 #include "openMVG/matching/kvld/algorithm.h"
 
+#include "minilog/minilog.h"
+
 namespace openMVG { namespace image { template <typename T> class Image; } }
 
 //Parameters concerning speed and performance
@@ -123,29 +125,29 @@ public:
 
     diff[ 0 ] *= 0.36;
     diff[ 1 ] *= 0.64 / ( binNum );
-    //std::cout<<"diff = "<<diff[0]<<" "<<diff[1]<<std::endl;
+    //MLOG<<"diff = "<<diff[0]<<" "<<diff[1]<<std::endl;
     return diff[ 0 ] + diff[ 1 ];
   }
 
   inline void test() const
   {
-    std::cout << "contrast = " << contrast << std::endl;
-    std::cout << std::endl << "distance= " << distance << std::endl;
+    MLOG << "contrast = " << contrast << std::endl;
+    MLOG << std::endl << "distance= " << distance << std::endl;
 
-    std::cout << "weights   : ";
+    MLOG << "weights   : ";
     for (int i = 0; i < dimension; i++ )
     {
-      std::cout << weight[ i ] << " ";
+      MLOG << weight[ i ] << " ";
     }
-    std::cout << std::endl;
+    MLOG << std::endl;
     for (int i = 0; i < dimension; i++ )
     {
       //cout<<"principle= "<<principleAngle[i]<<endl;
       for (int j = 0; j < subdirection; j++ )
       {
-        std::cout << descriptor[ i * subdirection + j ] << " ";
+        MLOG << descriptor[ i * subdirection + j ] << " ";
       }
-      std::cout << std::endl;
+      MLOG << std::endl;
     }
   }
 

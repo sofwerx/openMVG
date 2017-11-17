@@ -31,6 +31,8 @@
 #include "third_party/cmdLine/cmdLine.h"
 #include "third_party/stlplus3/filesystemSimplified/file_system.hpp"
 
+#include "minilog/minilog.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -137,7 +139,7 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
   }
 
-  std::cout << " You called : " << "\n"
+  MLOG << " You called : " << "\n"
             << argv[0] << "\n"
             << "--input_file " << sSfM_Data_Filename << "\n"
             << "--out_dir " << sMatchesDirectory << "\n"
@@ -265,7 +267,7 @@ int main(int argc, char **argv)
     }
   }
 
-  std::cout << std::endl << " - PUTATIVE MATCHES - " << std::endl;
+  MLOG << std::endl << " - PUTATIVE MATCHES - " << std::endl;
   // If the matches already exists, reload them
   if
   (
@@ -280,17 +282,17 @@ int main(int argc, char **argv)
       std::cerr << "Cannot load input matches file";
       return EXIT_FAILURE;
     }
-    std::cout << "\t PREVIOUS RESULTS LOADED;"
+    MLOG << "\t PREVIOUS RESULTS LOADED;"
       << " #pair: " << map_PutativesMatches.size() << std::endl;
   }
   else // Compute the putative matches
   {
-    std::cout << "Use: ";
+    MLOG << "Use: ";
     switch (ePairmode)
     {
-      case PAIR_EXHAUSTIVE: std::cout << "exhaustive pairwise matching" << std::endl; break;
-      case PAIR_CONTIGUOUS: std::cout << "sequence pairwise matching" << std::endl; break;
-      case PAIR_FROM_FILE:  std::cout << "user defined pairwise matching" << std::endl; break;
+      case PAIR_EXHAUSTIVE: MLOG << "exhaustive pairwise matching" << std::endl; break;
+      case PAIR_CONTIGUOUS: MLOG << "sequence pairwise matching" << std::endl; break;
+      case PAIR_FROM_FILE:  MLOG << "user defined pairwise matching" << std::endl; break;
     }
 
     // Allocate the right Matcher according the Matching requested method
@@ -299,44 +301,44 @@ int main(int argc, char **argv)
     {
       if (regions_type->IsScalar())
       {
-        std::cout << "Using FAST_CASCADE_HASHING_L2 matcher" << std::endl;
+        MLOG << "Using FAST_CASCADE_HASHING_L2 matcher" << std::endl;
         collectionMatcher.reset(new Cascade_Hashing_Matcher_Regions(fDistRatio));
       }
       else
       if (regions_type->IsBinary())
       {
-        std::cout << "Using BRUTE_FORCE_HAMMING matcher" << std::endl;
+        MLOG << "Using BRUTE_FORCE_HAMMING matcher" << std::endl;
         collectionMatcher.reset(new Matcher_Regions(fDistRatio, BRUTE_FORCE_HAMMING));
       }
     }
     else
     if (sNearestMatchingMethod == "BRUTEFORCEL2")
     {
-      std::cout << "Using BRUTE_FORCE_L2 matcher" << std::endl;
+      MLOG << "Using BRUTE_FORCE_L2 matcher" << std::endl;
       collectionMatcher.reset(new Matcher_Regions(fDistRatio, BRUTE_FORCE_L2));
     }
     else
     if (sNearestMatchingMethod == "BRUTEFORCEHAMMING")
     {
-      std::cout << "Using BRUTE_FORCE_HAMMING matcher" << std::endl;
+      MLOG << "Using BRUTE_FORCE_HAMMING matcher" << std::endl;
       collectionMatcher.reset(new Matcher_Regions(fDistRatio, BRUTE_FORCE_HAMMING));
     }
     else
     if (sNearestMatchingMethod == "ANNL2")
     {
-      std::cout << "Using ANN_L2 matcher" << std::endl;
+      MLOG << "Using ANN_L2 matcher" << std::endl;
       collectionMatcher.reset(new Matcher_Regions(fDistRatio, ANN_L2));
     }
     else
     if (sNearestMatchingMethod == "CASCADEHASHINGL2")
     {
-      std::cout << "Using CASCADE_HASHING_L2 matcher" << std::endl;
+      MLOG << "Using CASCADE_HASHING_L2 matcher" << std::endl;
       collectionMatcher.reset(new Matcher_Regions(fDistRatio, CASCADE_HASHING_L2));
     }
     else
     if (sNearestMatchingMethod == "FASTCASCADEHASHINGL2")
     {
-      std::cout << "Using FAST_CASCADE_HASHING_L2 matcher" << std::endl;
+      MLOG << "Using FAST_CASCADE_HASHING_L2 matcher" << std::endl;
       collectionMatcher.reset(new Cascade_Hashing_Matcher_Regions(fDistRatio));
     }
     if (!collectionMatcher)
@@ -373,7 +375,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
       }
     }
-    std::cout << "Task (Regions Matching) done in (s): " << timer.elapsed() << std::endl;
+    MLOG << "Task (Regions Matching) done in (s): " << timer.elapsed() << std::endl;
   }
   //-- export putative matches Adjacency matrix
   PairWiseMatchingToAdjacencyMatrixSVG(vec_fileNames.size(),
@@ -462,10 +464,10 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-    std::cout << "Task done in (s): " << timer.elapsed() << std::endl;
+    MLOG << "Task done in (s): " << timer.elapsed() << std::endl;
 
     //-- export Adjacency matrix
-    std::cout << "\n Export Adjacency Matrix of the pairwise's geometric matches"
+    MLOG << "\n Export Adjacency Matrix of the pairwise's geometric matches"
       << std::endl;
     PairWiseMatchingToAdjacencyMatrixSVG(vec_fileNames.size(),
       map_GeometricMatches,

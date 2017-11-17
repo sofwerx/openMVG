@@ -215,7 +215,7 @@ float KVLD( const Image< float >& I1,
   ImageScale Chaine1( I1 );
   ImageScale Chaine2( I2 );
 
-  std::cout << "Image scale-space complete..." << std::endl;
+  MLOG << "Image scale-space complete..." << std::endl;
 
   const float range1 = getRange( I1, std::min( F1.size(), matches.size() ), kvldParameters.inlierRate );
   const float range2 = getRange( I2, std::min( F2.size(), matches.size() ), kvldParameters.inlierRate );
@@ -223,7 +223,7 @@ float KVLD( const Image< float >& I1,
   const size_t size = matches.size();
 
   //================distance map construction, foruse of selecting neighbors===============//
-  std::cout << "computing distance maps" << std::endl;
+  MLOG << "computing distance maps" << std::endl;
 
   const bool bPrecomputedDist = false;
 

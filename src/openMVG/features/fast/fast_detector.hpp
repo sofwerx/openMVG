@@ -15,6 +15,8 @@
 #include "openMVG/image/image_container.hpp"
 #include "third_party/fast/fast.h"
 
+#include "minilog/minilog.h"
+
 //
 // Bibliography
 //
@@ -67,7 +69,7 @@ public:
     if (size_ == 12) detector = fast12_detect_nonmax;
     if (!detector)
     {
-      std::cout << "Invalid size for FAST detector: " << size_ << std::endl;
+      MLOG << "Invalid size for FAST detector: " << size_ << std::endl;
       return;
     }
 

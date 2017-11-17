@@ -15,12 +15,14 @@
 #include <cstdlib>
 #include <memory>
 
+#include "minilog/minilog.h"
+
 using namespace openMVG;
 
 int main( int argc, char **argv )
 {
   using namespace std;
-  std::cout << "Global Color Harmonization" << std::endl
+  MLOG << "Global Color Harmonization" << std::endl
             << std::endl;
 
   CmdLine cmd;
@@ -83,7 +85,7 @@ int main( int argc, char **argv )
 
   if ( m_colorHarmonizeEngine->Process() )
   {
-    std::cout << std::endl
+    MLOG << std::endl
       << " ColorHarmonization took (s): "
       << timer.elapsed() << std::endl;
 

@@ -18,6 +18,8 @@
 #include "openMVG/matching/indMatch.hpp"
 #include "openMVG/matching/matching_interface.hpp"
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 namespace matching {
 
@@ -83,7 +85,7 @@ class ArrayMatcherCascadeHashing  : public ArrayMatcher<Scalar, Metric>
   bool SearchNeighbour( const Scalar * query,
                         int * indice, DistanceType * distance)
   {
-    std::cerr << "This matcher is not made to match a single query" << std::endl;
+    MLOG << "This matcher is not made to match a single query" << std::endl;
     return false;
   }
 

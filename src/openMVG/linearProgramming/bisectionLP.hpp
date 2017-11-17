@@ -15,6 +15,9 @@
 
 #include "openMVG/linearProgramming/linearProgrammingInterface.hpp"
 
+#include "minilog/minilog.h"
+
+
 namespace openMVG   {
 namespace linearProgramming  {
 
@@ -62,7 +65,7 @@ bool BisectionLP(
       bModelFound = true;
 
       if (bVerbose)
-        std::cout << "\n" << k<<"/"<<maxIteration
+        MLOG << "\n" << k<<"/"<<maxIteration
           << "\t gamma " << gamma
           << "\t gammaUp-gammaLow " << gammaUp-gammaLow << std::endl;
     }
@@ -70,7 +73,7 @@ bool BisectionLP(
     {
       gammaLow = gamma;
       if (bVerbose)
-        std::cout << "\nNot feasible with gamma: " << gamma << std::endl;
+        MLOG << "\nNot feasible with gamma: " << gamma << std::endl;
     }
   } while (k < maxIteration && gammaUp - gammaLow > eps);
 

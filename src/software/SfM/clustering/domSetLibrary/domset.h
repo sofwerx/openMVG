@@ -19,6 +19,8 @@
 #include <Eigen/Core>
 #include "types.h"
 
+#include "minilog/minilog.h"
+
 namespace nomoko {
   class Domset{
     private:
@@ -52,7 +54,7 @@ namespace nomoko {
              const float& _kVoxelsize):
                points(_points), views(_views),
                cameras(_cameras), kVoxelSize(_kVoxelsize) {
-        std::cout << " [ Dominant set clustering of views ] " << std::endl;
+        MLOG << " [ Dominant set clustering of views ] " << std::endl;
         computeInformation();
       }
 

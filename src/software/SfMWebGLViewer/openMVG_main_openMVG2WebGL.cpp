@@ -19,6 +19,8 @@
 #include "third_party/cmdLine/cmdLine.h"
 #include "third_party/progress/progress_display.hpp"
 
+#include "minilog/minilog.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -527,9 +529,9 @@ int main( int argc , char ** argv )
       exit( EXIT_FAILURE );
   }
 
-  std::cout << "Using : " << std::endl;
-  std::cout << "Input file : " << sSfM_Data_Filename << std::endl;
-  std::cout << "Output dir : " << sOutDir << std::endl;
+  MLOG << "Using : " << std::endl;
+  MLOG << "Input file : " << sSfM_Data_Filename << std::endl;
+  MLOG << "Output dir : " << sOutDir << std::endl;
 
   if ( ! ExportToWebGL( sSfM_Data_Filename , sOutDir ) )
   {

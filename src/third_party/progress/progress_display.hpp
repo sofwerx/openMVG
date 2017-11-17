@@ -20,6 +20,8 @@
 #include <iostream>
 #include <mutex>
 
+#include "minilog/minilog.h"
+
  /**
  * @brief C_Progress_display displays an appropriate indication of progress at an appropriate place in an appropriate form.
  * -- Class modeled from BOOST::PROGRESS::progress_display
@@ -70,7 +72,7 @@ public:
       C_Progress::restart(ulExpected_count, msg); //-- Initialize the base class
       if (!msg.empty())
         m_msg = msg;
-      m_os
+      MLOG
         << m_msg
         << "0%   10   20   30   40   50   60   70   80   90   100%\n"
         <<  "|----|----|----|----|----|----|----|----|----|----|"
@@ -93,13 +95,13 @@ private:
       // use of floating point ensures that both large and small counts
       // work correctly.
       unsigned int tics_needed = static_cast<unsigned int> ((static_cast<double> (_count) /_expected_count) *50.0);
-      do { m_os << '*' << std::flush; } while (++_tic < tics_needed);
+      do { MLOG << '*' << std::flush; } while (++_tic < tics_needed);
       _next_tic_count = static_cast<unsigned long> ((_tic/50.0) *_expected_count);
       if (_count == _expected_count)
       {
         if (_tic < 51)
-          m_os << '*';
-        m_os << std::endl;
+          MLOG << '*';
+        MLOG << std::endl;
       }
     } // display_tic
 };

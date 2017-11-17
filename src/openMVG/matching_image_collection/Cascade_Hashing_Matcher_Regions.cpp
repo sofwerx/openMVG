@@ -17,6 +17,8 @@
 
 #include "third_party/progress/progress.hpp"
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 namespace matching_image_collection {
 
@@ -237,7 +239,7 @@ void Cascade_Hashing_Matcher_Regions::Match
 )const
 {
 #ifdef OPENMVG_USE_OPENMP
-  std::cout << "Using the OPENMP thread interface" << std::endl;
+  MLOG << "Using the OPENMP thread interface" << std::endl;
 #endif
   if (!regions_provider)
     return;

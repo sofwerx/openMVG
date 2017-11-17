@@ -40,6 +40,7 @@
 #include <functional>
 #include <sstream>
 
+#include "minilog/minilog.h"
 
 namespace openMVG{
 
@@ -79,7 +80,7 @@ ColorHarmonizationEngineGlobal::~ColorHarmonizationEngineGlobal()
 void pauseProcess()
 {
   unsigned char i;
-  std::cout << "\nPause : type key and press enter: ";
+  MLOG << "\nPause : type key and press enter: ";
   std::cin >> i;
 }
 
@@ -98,7 +99,7 @@ bool ColorHarmonizationEngineGlobal::Process()
     return false;
   if (_map_Matches.size() == 0 )
   {
-    std::cout << std::endl << "Matches file is empty" <<std:: endl;
+    MLOG << std::endl << "Matches file is empty" <<std:: endl;
     return false;
   }
 
@@ -129,7 +130,7 @@ bool ColorHarmonizationEngineGlobal::Process()
   //-------------------
   if (!CleanGraph())
   {
-    std::cout << std::endl << "There is no largest CC in the graph" << std::endl;
+    MLOG << std::endl << "There is no largest CC in the graph" << std::endl;
     return false;
   }
 
@@ -142,10 +143,10 @@ bool ColorHarmonizationEngineGlobal::Process()
   {
     do
     {
-      std::cout << "Choose your reference image:\n";
+      MLOG << "Choose your reference image:\n";
       for (size_t i = 0; i < _vec_fileNames.size(); ++i)
       {
-        std::cout << "id: " << i << "\t" << _vec_fileNames[ i ] << std::endl;
+        MLOG << "id: " << i << "\t" << _vec_fileNames[ i ] << std::endl;
       }
     }
     while (
@@ -157,13 +158,13 @@ bool ColorHarmonizationEngineGlobal::Process()
   //Choose selection method
   if (_selectionMethod == -1 )
   {
-    std::cout << "Choose your selection method:\n"
+    MLOG << "Choose your selection method:\n"
       << "- FullFrame: 0\n"
       << "- Matched Points: 1\n"
       << "- VLD Segment: 2\n";
     while (! ( std::cin >> _selectionMethod ) || _selectionMethod < 0 || _selectionMethod > 2)
     {
-      std::cout << _selectionMethod << " is not accepted.\nPlease use a valid method number.\n";
+      MLOG << _selectionMethod << " is not accepted.\nPlease use a valid method number.\n";
     }
   }
 
@@ -192,7 +193,7 @@ bool ColorHarmonizationEngineGlobal::Process()
     map_cameraNodeToCameraIndex[*iterSet] = std::distance(set_indeximage.begin(), iterSet);
   }
 
-  std::cout << "\n Remaining cameras after CC filter : \n"
+  MLOG << "\n Remaining cameras after CC filter : \n"
     << map_cameraIndexTocameraNode.size() << " from a total of " << _vec_fileNames.size() << std::endl;
 
   size_t bin      = 256;
@@ -218,7 +219,7 @@ bool ColorHarmonizationEngineGlobal::Process()
     //-- Edges names:
     std::pair< std::string, std::string > p_imaNames;
     p_imaNames = make_pair( _vec_fileNames[ I ], _vec_fileNames[ J ] );
-    std::cout << "Current edge : "
+    MLOG << "Current edge : "
       << stlplus::filename_part(p_imaNames.first) << "\t"
       << stlplus::filename_part(p_imaNames.second) << std::endl;
 
@@ -269,7 +270,7 @@ bool ColorHarmonizationEngineGlobal::Process()
       }
       break;
       default:
-        std::cout << "Selection method unsupported" << std::endl;
+        MLOG << "Selection method unsupported" << std::endl;
         return false;
     }
 
@@ -324,7 +325,7 @@ bool ColorHarmonizationEngineGlobal::Process()
       histoI.GetHist(), histoJ.GetHist());
   }
 
-  std::cout << "\n -- \n SOLVE for color consistency with linear programming\n --" << std::endl;
+  MLOG << "\n -- \n SOLVE for color consistency with linear programming\n --" << std::endl;
   //-- Solve for the gains and offsets:
   std::vector<size_t> vec_indexToFix;
   vec_indexToFix.push_back(map_cameraNodeToCameraIndex[_imgRef]);
@@ -371,7 +372,7 @@ bool ColorHarmonizationEngineGlobal::Process()
     lpSolver.getSolution(vec_solution_b);
   }
 
-  std::cout << std::endl
+  MLOG << std::endl
     << " ColorHarmonization solving on a graph with: " << _map_Matches.size() << " edges took (s): "
     << timer.elapsed() << std::endl
     << "LInfinity fitting error: \n"
@@ -379,17 +380,17 @@ bool ColorHarmonizationEngineGlobal::Process()
     << "- for the green channel is: " << vec_solution_g.back() << " gray level(s)" << std::endl
     << "- for the blue channel is: " << vec_solution_b.back() << " gray level(s)" << std::endl;
 
-  std::cout << "\n\nFound solution_r:\n";
+  MLOG << "\n\nFound solution_r:\n";
   std::copy(vec_solution_r.begin(), vec_solution_r.end(), std::ostream_iterator<double>(std::cout, " "));
 
-  std::cout << "\n\nFound solution_g:\n";
+  MLOG << "\n\nFound solution_g:\n";
   std::copy(vec_solution_g.begin(), vec_solution_g.end(), std::ostream_iterator<double>(std::cout, " "));
 
-  std::cout << "\n\nFound solution_b:\n";
+  MLOG << "\n\nFound solution_b:\n";
   std::copy(vec_solution_b.begin(), vec_solution_b.end(), std::ostream_iterator<double>(std::cout, " "));
-  std::cout << std::endl;
+  MLOG << std::endl;
 
-  std::cout << "\n\nThere is :\n" << set_indeximage.size() << " images to transform." << std::endl;
+  MLOG << "\n\nThere is :\n" << set_indeximage.size() << " images to transform." << std::endl;
 
   //-> convert solution to gain offset and creation of the LUT per image
   C_Progress_display my_progress_bar( set_indeximage.size() );
@@ -529,7 +530,7 @@ bool ColorHarmonizationEngineGlobal::CleanGraph()
     putativeGraph);
 
   const int connectedComponentCount = lemon::countConnectedComponents(putativeGraph.g);
-  std::cout << "\n"
+  MLOG << "\n"
     << "ColorHarmonizationEngineGlobal::CleanGraph() :: => connected Component cardinal: "
     << connectedComponentCount << std::endl;
 
@@ -547,7 +548,7 @@ bool ColorHarmonizationEngineGlobal::CleanGraph()
         count = iter->second.size();
         iterLargestCC = iter;
       }
-      std::cout << "Connected component of size : " << iter->second.size() << std::endl;
+      MLOG << "Connected component of size : " << iter->second.size() << std::endl;
     }
 
     //-- Remove all nodes that are not listed in the largest CC
@@ -588,7 +589,7 @@ bool ColorHarmonizationEngineGlobal::CleanGraph()
     stlplus::create_filespec(_sOutDirectory, "cleanedGraph"),
     putativeGraph);
 
-  std::cout << "\n"
+  MLOG << "\n"
     << "Cardinal of nodes: " << lemon::countNodes(putativeGraph.g) << "\n"
     << "Cardinal of edges: " << lemon::countEdges(putativeGraph.g) << std::endl
     << std::endl;

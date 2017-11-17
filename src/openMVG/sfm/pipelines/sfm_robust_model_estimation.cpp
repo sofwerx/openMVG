@@ -16,6 +16,8 @@
 #include "openMVG/robust_estimation/robust_estimator_ACRansac.hpp"
 #include "openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp"
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 namespace sfm {
 

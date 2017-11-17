@@ -279,6 +279,7 @@ if (NOT FLANN_FOUND OR OpenMVG_USE_INTERNAL_FLANN)
   set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/flann/src/cpp)
 endif()
 
+
 # ==============================================================================
 # CoinUtils
 # ==============================================================================
@@ -378,6 +379,8 @@ endif (OpenMVG_USE_OPENCV)
 # ==============================================================================
 add_subdirectory(third_party)
 
+INCLUDE_DIRECTORIES(third_party)
+
 # ==============================================================================
 # Include directories
 # ==============================================================================
@@ -387,7 +390,7 @@ set(OpenMVG_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/cereal/include
   ${LEMON_INCLUDE_DIRS}
   ${EIGEN_INCLUDE_DIRS}
-  ${FLANN_INCLUDE_DIRS}
+  ${FLANN_INCLUDE_DIRS}/..
   CACHE PATH "include directories for openMVG and its dependencies"
 )
 
@@ -431,7 +434,7 @@ if (OpenMVG_BUILD_SOFTWARES)
 endif (OpenMVG_BUILD_SOFTWARES)
 
 # Included for research purpose only
-add_subdirectory(nonFree)
+#add_subdirectory(nonFree)
 
 # ==============================================================================
 # Documentation

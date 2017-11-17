@@ -15,6 +15,8 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 
+#include "minilog/minilog.h"
+
 #ifdef _MSC_VER
 #pragma warning( once : 4267 ) //warning C4267: 'argument' : conversion from 'size_t' to 'const int', possible loss of data
 #endif
@@ -240,7 +242,7 @@ bool L2RotationAveraging_Refine
 )
 {
   if (vec_relativeRot.size() == 0 ||vec_ApprRotMatrix.size() == 0 ) {
-    std::cout << "Skip nonlinear rotation optimization, no sufficient data provided " << std::endl;
+    MLOG << "Skip nonlinear rotation optimization, no sufficient data provided " << std::endl;
     return false;
   }
 
@@ -305,7 +307,7 @@ bool L2RotationAveraging_Refine
 
   ceres::Solver::Summary summary;
   ceres::Solve(solverOptions, &problem, &summary);
-  // std::cout << summary.FullReport() << std::endl;
+  // MLOG << summary.FullReport() << std::endl;
 
   if (summary.IsSolutionUsable())
   {

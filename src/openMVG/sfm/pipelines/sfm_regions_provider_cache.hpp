@@ -18,6 +18,8 @@
 #include <string>
 #include <thread>
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 namespace sfm {
 
@@ -77,7 +79,7 @@ public:
     C_Progress * 
   ) override
   {
-    std::cout << "Initialization of the Regions_Provider_Cache. #Elements in the cache: "<< max_cache_size_ << std::endl;
+    MLOG << "Initialization of the Regions_Provider_Cache. #Elements in the cache: "<< max_cache_size_ << std::endl;
 
     feat_directory_ = feat_directory;
     region_type_.reset(region_type->EmptyClone());

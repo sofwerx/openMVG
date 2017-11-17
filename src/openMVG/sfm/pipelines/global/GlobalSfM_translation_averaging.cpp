@@ -31,6 +31,8 @@
 #include "openMVG/stl/stl.hpp"
 #include "openMVG/system/timer.hpp"
 
+#include "minilog/minilog.h"
+
 #include <vector>
 
 namespace openMVG{
@@ -103,7 +105,7 @@ bool GlobalSfM_Translation_AveragingSolver::Translation_averaging(
     const std::set<IndexT> index = getIndexT(vec_relative_motion_);
 
     const size_t iNview = index.size();
-    std::cout << "\n-------------------------------" << "\n"
+    MLOG << "\n-------------------------------" << "\n"
       << " Global translations computation: " << "\n"
       << "   - Ready to compute " << iNview << " global translations." << "\n"
       << "     from #relative translations: " << vec_relative_motion_.size()*3 << std::endl;
@@ -148,7 +150,7 @@ bool GlobalSfM_Translation_AveragingSolver::Translation_averaging(
           //--
           // Solving
           const bool bFeasible = solverLP.solve();
-          std::cout << " \n Feasibility " << bFeasible << std::endl;
+          MLOG << " \n Feasibility " << bFeasible << std::endl;
           //--
           if (bFeasible)  {
             solverLP.getSolution(vec_solution);
@@ -172,21 +174,25 @@ bool GlobalSfM_Translation_AveragingSolver::Translation_averaging(
             << " converge with gamma: " << gamma << ".\n"
             << " timing (s): " << timeLP_translation << ".\n"
             << "-------------------------------" << "\n";
-          std::cout << os.str() << std::endl;
+          MLOG << os.str() << std::endl;
         }
 
-        std::cout << "Found solution:\n";
-        std::copy(vec_solution.begin(), vec_solution.end(), std::ostream_iterator<double>(std::cout, " "));
+        MLOG << "Found solution:\n";
+		std::ostringstream ostr1, ostr2, ostr3;
+        std::copy(vec_solution.begin(), vec_solution.end(), std::ostream_iterator<double>(ostr1, " "));
+		MLOG << ostr1.str();
 
         std::vector<double> vec_camTranslation(iNview*3,0);
         std::copy(&vec_solution[0], &vec_solution[iNview*3], &vec_camTranslation[0]);
 
         std::vector<double> vec_camRelLambdas(&vec_solution[iNview*3], &vec_solution[iNview*3 + vec_relative_motion_cpy.size()]);
-        std::cout << "\ncam position: " << std::endl;
-        std::copy(vec_camTranslation.begin(), vec_camTranslation.end(), std::ostream_iterator<double>(std::cout, " "));
-        std::cout << "\ncam Lambdas: " << std::endl;
-        std::copy(vec_camRelLambdas.begin(), vec_camRelLambdas.end(), std::ostream_iterator<double>(std::cout, " "));
-        std::cout << std::endl;
+        MLOG << "\ncam position: " << std::endl;
+        std::copy(vec_camTranslation.begin(), vec_camTranslation.end(), std::ostream_iterator<double>(ostr2, " "));
+		MLOG << ostr2.str();
+        MLOG << "\ncam Lambdas: " << std::endl;
+        std::copy(vec_camRelLambdas.begin(), vec_camRelLambdas.end(), std::ostream_iterator<double>(ostr3, " "));
+		MLOG << ostr3.str();
+        MLOG << std::endl;
 
         // Update the view poses according the found camera centers
         for (size_t i = 0; i < iNview; ++i)
@@ -300,7 +306,7 @@ void GlobalSfM_Translation_AveragingSolver::Compute_translations
   matching::PairWiseMatches &tripletWise_matches
 )
 {
-  std::cout << "\n-------------------------------" << "\n"
+  MLOG << "\n-------------------------------" << "\n"
     << " Relative translations computation: " << "\n"
     << "-------------------------------" << std::endl;
 
@@ -359,7 +365,7 @@ void GlobalSfM_Translation_AveragingSolver::ComputePutativeTranslation_EdgesCove
   // List putative triplets (from global rotations Ids)
   const std::vector< graph::Triplet > vec_triplets =
     graph::tripletListing(rotation_pose_id_graph);
-  std::cout << "#Triplets: " << vec_triplets.size() << std::endl;
+  MLOG << "#Triplets: " << vec_triplets.size() << std::endl;
 
   {
     // Compute triplets of translations
@@ -575,7 +581,7 @@ void GlobalSfM_Translation_AveragingSolver::ComputePutativeTranslation_EdgesCove
   }
 
   const double timeLP_triplet = timerLP_triplet.elapsed();
-  std::cout << "TRIPLET COVERAGE TIMING:\n"
+  MLOG << "TRIPLET COVERAGE TIMING:\n"
     << "-------------------------------" << "\n"
     << "-- #Relative triplet of translations estimates: " << vec_triplet_relative_motion.size()
     << " computed from " << vec_triplets.size() << " triplets.\n"
@@ -788,7 +794,7 @@ bool GlobalSfM_Translation_AveragingSolver::Estimate_T_triplet
 
 #ifdef DEBUG_TRIPLET
   {
-    std::cout << "Triplet : status: " << bTest
+    MLOG << "Triplet : status: " << bTest
       << " AC: " << std::sqrt(dPrecision)
       << " inliers % " << double(vec_inliers.size()) / tracks.size() * 100.0
       << " total putative " << tracks.size() << std::endl;

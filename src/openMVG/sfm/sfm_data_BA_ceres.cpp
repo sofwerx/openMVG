@@ -25,6 +25,8 @@
 #include "openMVG/sfm/sfm_data.hpp"
 #include "openMVG/types.hpp"
 
+#include "minilog/minilog.h"
+
 #include <ceres/rotation.h>
 #include <ceres/types.h>
 
@@ -329,7 +331,7 @@ bool Bundle_Adjustment_Ceres::Adjust
     }
     else
     {
-      std::cerr << "Unsupported camera type." << std::endl;
+      MLOG << "Unsupported camera type." << std::endl;
     }
   }
 
@@ -410,7 +412,7 @@ bool Bundle_Adjustment_Ceres::Adjust
       }
       if (obs.empty())
       {
-        std::cerr
+        MLOG
           << "Cannot use this GCP id: " << gcp_landmark_it.first
           << ". There is not linked image observation." << std::endl;
       }
@@ -460,13 +462,13 @@ bool Bundle_Adjustment_Ceres::Adjust
   ceres::Solver::Summary summary;
   ceres::Solve(ceres_config_options, &problem, &summary);
   if (ceres_options_.bCeres_summary_)
-    std::cout << summary.FullReport() << std::endl;
+    MLOG << summary.FullReport() << std::endl;
 
   // If no error, get back refined parameters
   if (!summary.IsSolutionUsable())
   {
     if (ceres_options_.bVerbose_)
-      std::cout << "Bundle Adjustment failed." << std::endl;
+      MLOG << "Bundle Adjustment failed." << std::endl;
     return false;
   }
   else // Solution is usable
@@ -474,7 +476,7 @@ bool Bundle_Adjustment_Ceres::Adjust
     if (ceres_options_.bVerbose_)
     {
       // Display statistics about the minimization
-      std::cout << std::endl
+      MLOG << std::endl
         << "Bundle Adjustment statistics (approximated RMSE):\n"
         << " #views: " << sfm_data.views.size() << "\n"
         << " #poses: " << sfm_data.poses.size() << "\n"
@@ -486,7 +488,7 @@ bool Bundle_Adjustment_Ceres::Adjust
         << " Time (s): " << summary.total_time_in_seconds << "\n"
         << std::endl;
       if (options.use_motion_priors_opt)
-        std::cout << "Usable motion priors: " << (int)b_usable_prior << std::endl;
+        MLOG << "Usable motion priors: " << (int)b_usable_prior << std::endl;
     }
 
     // Update camera poses with refined data
@@ -544,7 +546,7 @@ bool Bundle_Adjustment_Ceres::Adjust
       {
         // Compute the median residual error
         Vec residual = (Eigen::Map<Mat3X>(X_SfM[0].data(), 3, X_SfM.size()) - Eigen::Map<Mat3X>(X_GPS[0].data(), 3, X_GPS.size())).colwise().norm();
-        std::cout
+        MLOG
           << "Pose prior statistics (user units):\n"
           << " - Starting median fitting error: " << pose_center_robust_fitting_error << "\n"
           << " - Final fitting error:";

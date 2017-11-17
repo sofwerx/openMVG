@@ -20,6 +20,8 @@
 #include "openMVG/robust_estimation/robust_estimator_ACRansac.hpp"
 #include "openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp"
 
+#include "minilog/minilog.h"
+
 #include <memory>
 #include <utility>
 
@@ -112,7 +114,7 @@ namespace sfm {
       pose = geometry::Pose3(R, -R.transpose() * t);
     }
 
-    std::cout << "\n"
+    MLOG << "\n"
       << "-------------------------------" << "\n"
       << "-- Robust Resection " << "\n"
       << "-- Resection status: " << bResection << "\n"

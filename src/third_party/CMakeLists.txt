@@ -111,7 +111,10 @@ if (DEFINED OpenMVG_USE_INTERNAL_EIGEN)
   add_subdirectory(eigen)
 endif()
 
-list(APPEND directories cmdLine histogram htmlDoc progress vectorGraphics)
+# Mini log class by RH
+ADD_SUBDIRECTORY(minilog)
+
+list(APPEND directories cmdLine histogram htmlDoc progress vectorGraphics minilog)
 foreach(inDirectory ${directories})
 install(
   DIRECTORY ./${inDirectory}

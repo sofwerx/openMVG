@@ -21,6 +21,8 @@
 #include "openMVG/matching/matcher_kdtree_flann.hpp"
 using namespace openMVG::matching;
 
+#include "minilog/minilog.h"
+
 namespace nomoko
 {
 void Domset::computeInformation()
@@ -168,15 +170,15 @@ void Domset::voxelGridFilter( const float &sizeX, const float &sizeY, const floa
   const size_t numVoxelY = static_cast<size_t>( ceil( maxPt.pos( 1 ) - minPt.pos( 1 ) ) / sizeY );
   const size_t numVoxelZ = static_cast<size_t>( ceil( maxPt.pos( 2 ) - minPt.pos( 2 ) ) / sizeZ );
   /*
-  std::cout << "Max = " << maxPt.pos.transpose() << std::endl;
-  std::cout << "Min = " << minPt.pos.transpose() << std::endl;
-  std::cout << "Max - Min = " << ( maxPt.pos - minPt.pos ).transpose() << std::endl;
-  std::cout << "VoxelSize X = " << sizeX << std::endl;
-  std::cout << "VoxelSize Y = " << sizeY << std::endl;
-  std::cout << "VoxelSize Z = " << sizeZ << std::endl;
-  std::cout << "Number Voxel X = " << numVoxelX << std::endl;
-  std::cout << "Number Voxel Y = " << numVoxelY << std::endl;
-  std::cout << "Number Voxel Z = " << numVoxelZ << std::endl;
+  MLOG << "Max = " << maxPt.pos.transpose() << std::endl;
+  MLOG << "Min = " << minPt.pos.transpose() << std::endl;
+  MLOG << "Max - Min = " << ( maxPt.pos - minPt.pos ).transpose() << std::endl;
+  MLOG << "VoxelSize X = " << sizeX << std::endl;
+  MLOG << "VoxelSize Y = " << sizeY << std::endl;
+  MLOG << "VoxelSize Z = " << sizeZ << std::endl;
+  MLOG << "Number Voxel X = " << numVoxelX << std::endl;
+  MLOG << "Number Voxel Y = " << numVoxelY << std::endl;
+  MLOG << "Number Voxel Z = " << numVoxelZ << std::endl;
   */
 
   /* adding points to the voxels */
@@ -254,7 +256,7 @@ void Domset::voxelGridFilter( const float &sizeX, const float &sizeY, const floa
 
 Eigen::MatrixXf Domset::getSimilarityMatrix( std::map<size_t, size_t> &xId2vId )
 {
-//  std::cout << "Generating Similarity Matrix " << std::endl;
+//  MLOG << "Generating Similarity Matrix " << std::endl;
   const size_t numC = xId2vId.size();
   const size_t numP = points.size();
   if ( numC == 0 || numP == 0 )
@@ -263,7 +265,7 @@ Eigen::MatrixXf Domset::getSimilarityMatrix( std::map<size_t, size_t> &xId2vId )
     exit( 0 );
   }
   const float medianDist = getDistanceMedian( xId2vId );
-//  std::cout << "Median dists = " << medianDist << std::endl;
+//  MLOG << "Median dists = " << medianDist << std::endl;
   Eigen::MatrixXf simMat;
   simMat.resize( numC, numC );
 #if OPENMVG_USE_OPENMP
@@ -307,7 +309,7 @@ float Domset::computeViewDistance( const size_t &vId1, const size_t &vId2, const
 }
 float Domset::getDistanceMedian( const std::map<size_t, size_t> &xId2vId )
 {
-//  std::cout << "Finding Distance Median\n";
+//  MLOG << "Finding Distance Median\n";
 
   if ( xId2vId.empty() )
   {
@@ -336,7 +338,7 @@ float Domset::getDistanceMedian( const std::map<size_t, size_t> &xId2vId )
 
 void Domset::getAllDistances()
 {
-//  std::cout << "Finding View Distances\n";
+//  MLOG << "Finding View Distances\n";
   const size_t numC = views.size();
   if ( numC == 0 )
   {
@@ -407,7 +409,7 @@ void Domset::computeClustersAP( std::map<size_t, size_t> &xId2vId,
   const size_t numX = xId2vId.size();
   if ( numX == 0 )
   {
-    std::cout << "Invalid map size\n";
+    MLOG << "Invalid map size\n";
     exit( 0 );
   }
 
@@ -615,7 +617,7 @@ void Domset::computeClustersAP( std::map<size_t, size_t> &xId2vId,
 void Domset::clusterViews( std::map<size_t, size_t> &xId2vId, const size_t &minClusterSize,
                            const size_t &maxClusterSize )
 {
-//  std::cout << "[ Clustering Views ] " << std::endl;
+//  MLOG << "[ Clustering Views ] " << std::endl;
   const size_t umC = views.size();
   kMinClusterSize  = minClusterSize;
   kMaxClusterSize  = maxClusterSize;
@@ -630,7 +632,7 @@ void Domset::clusterViews( std::map<size_t, size_t> &xId2vId, const size_t &minC
 void Domset::clusterViews(
     const size_t &minClusterSize, const size_t &maxClusterSize )
 {
-//  std::cout << "[ Clustering Views ] " << std::endl;
+//  MLOG << "[ Clustering Views ] " << std::endl;
   const size_t numC = views.size();
   kMinClusterSize   = minClusterSize;
   kMaxClusterSize   = maxClusterSize;
@@ -660,8 +662,8 @@ void Domset::printClusters()
     }
     ss << "\n\n";
   }
-  std::cout << "Number of clusters = " << finalClusters.size() << std::endl;
-  std::cout << ss.str();
+  MLOG << "Number of clusters = " << finalClusters.size() << std::endl;
+  MLOG << ss.str();
 }
 
 void Domset::exportToPLY( const std::string &plyFilename, bool exportPoints )
@@ -719,7 +721,7 @@ void Domset::exportToPLY( const std::string &plyFilename, bool exportPoints )
   std::ofstream plyFile( plyFilename );
   if ( !plyFile.is_open() )
   {
-    std::cout << "Cant open " << plyFilename << " file\n";
+    MLOG << "Cant open " << plyFilename << " file\n";
   }
   else
   {

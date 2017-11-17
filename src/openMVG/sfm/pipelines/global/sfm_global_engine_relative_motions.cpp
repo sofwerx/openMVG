@@ -32,6 +32,8 @@
 #include "third_party/histogram/histogram.hpp"
 #include "third_party/htmlDoc/htmlDoc.hpp"
 
+#include "minilog/minilog.h"
+
 #include <ceres/types.h>
 
 #include <iostream>
@@ -118,7 +120,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Process() {
     const std::set<IndexT> set_remainingIds = graph::CleanGraph_KeepLargestBiEdge_Nodes<Pair_Set, IndexT>(pairs);
     if (set_remainingIds.empty())
     {
-      std::cout << "Invalid input image graph for global SfM" << std::endl;
+      MLOG << "Invalid input image graph for global SfM" << std::endl;
       return false;
     }
     KeepOnlyReferencedElement(set_remainingIds, matches_provider_->pairWise_matches_);
@@ -191,7 +193,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Global_Rotations
       set_pose_ids.insert(relative_R.j);
     }
 
-    std::cout << "\n-------------------------------" << "\n"
+    MLOG << "\n-------------------------------" << "\n"
       << " Global rotations computation: " << "\n"
       << "  #relative rotations: " << relatives_R.size() << "\n"
       << "  #global rotations: " << set_pose_ids.size() << std::endl;
@@ -208,7 +210,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Global_Rotations
     eRotation_averaging_method_, eRelativeRotationInferenceMethod,
     relatives_R, global_rotations);
 
-  std::cout
+  MLOG
     << "Found #global_rotations: " << global_rotations.size() << "\n"
     << "Timing: " << t.elapsed() << " seconds" << std::endl;
 
@@ -237,17 +239,17 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Global_Rotations
       const float error_max = *max_element(vec_rotation_fitting_error.begin(), vec_rotation_fitting_error.end());
       Histogram<float> histo(0.0f,error_max, 20);
       histo.Add(vec_rotation_fitting_error.begin(), vec_rotation_fitting_error.end());
-      std::cout
+      MLOG
         << "\nRelative/Global degree rotations residual errors {0," << error_max<< "}:"
         << histo.ToString() << std::endl;
       {
         Histogram<float> histo(0.0f, 5.0f, 20);
         histo.Add(vec_rotation_fitting_error.begin(), vec_rotation_fitting_error.end());
-        std::cout
+        MLOG
           << "\nRelative/Global degree rotations residual errors {0,5}:"
           << histo.ToString() << std::endl;
       }
-      std::cout << "\nStatistics about global rotation evaluation:" << std::endl;
+      MLOG << "\nStatistics about global rotation evaluation:" << std::endl;
       minMaxMeanMedian<float>(vec_rotation_fitting_error.begin(), vec_rotation_fitting_error.end());
     }
 
@@ -360,7 +362,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Initial_Structure
       }
     }
 
-    std::cout << std::endl << "Track stats" << std::endl;
+    MLOG << std::endl << "Track stats" << std::endl;
     {
       std::ostringstream osTrack;
       //-- Display stats:
@@ -384,7 +386,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Initial_Structure
         osTrack << "\t" << iter.first << "\t" << iter.second << "\n";
       }
       osTrack << "\n";
-      std::cout << osTrack.str();
+      MLOG << osTrack.str();
     }
   }
 
@@ -396,9 +398,9 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Compute_Initial_Structure
     SfM_Data_Structure_Computation_Blind structure_estimator(true);
     structure_estimator.triangulate(sfm_data_);
 
-    std::cout << "\n#removed tracks (invalid triangulation): " <<
+    MLOG << "\n#removed tracks (invalid triangulation): " <<
       trackCountBefore - IndexT(sfm_data_.GetLandmarks().size()) << std::endl;
-    std::cout << std::endl << "  Triangulation took (s): " << timer.elapsed() << std::endl;
+    MLOG << std::endl << "  Triangulation took (s): " << timer.elapsed() << std::endl;
 
     // Export initial structure
     if (!sLogging_file_.empty())
@@ -482,7 +484,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Adjust()
   const size_t pointcount_pixelresidual_filter = sfm_data_.structure.size();
   RemoveOutliers_AngleError(sfm_data_, 2.0);
   const size_t pointcount_angular_filter = sfm_data_.structure.size();
-  std::cout << "Outlier removal (remaining #points):\n"
+  MLOG << "Outlier removal (remaining #points):\n"
     << "\t initial structure size #3DPoints: " << pointcount_initial << "\n"
     << "\t\t pixel residual filter  #3DPoints: " << pointcount_pixelresidual_filter << "\n"
     << "\t\t angular filter         #3DPoints: " << pointcount_angular_filter << std::endl;
@@ -502,7 +504,7 @@ bool GlobalSfMReconstructionEngine_RelativeMotions::Adjust()
     // TODO: must ensure that track graph is producing a single connected component
 
     const size_t pointcount_cleaning = sfm_data_.structure.size();
-    std::cout << "Point_cloud cleaning:\n"
+    MLOG << "Point_cloud cleaning:\n"
       << "\t #3DPoints: " << pointcount_cleaning << "\n";
   }
 

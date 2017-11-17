@@ -20,6 +20,8 @@
 
 #include <vector>
 
+#include "minilog/minilog.h"
+
 namespace openMVG {
 
 // Main Cost functor for translation averaging:
@@ -220,7 +222,7 @@ bool solve_translations_problem_softl1
 
   if (!summary.IsSolutionUsable())
   {
-    std::cout << summary.FullReport() << std::endl;
+    MLOG << summary.FullReport() << std::endl;
     return false;
   }
 
